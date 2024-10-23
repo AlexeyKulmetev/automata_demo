@@ -10,56 +10,92 @@
 
 
 enum class STATES {
-    INITIAL_STATE
+    OFF,
+    ON, // ??
+    READY_TO_START, // ??
+    MONEY_ACCEPTED,
+    MONEY_NOT_ACCEPTED,
+    MONEY_EQUAL,
+    MONEY_MORE,
+    MONEY_LESS
+    // FIX ME add other states
 };
+// Just for debug
+inline std::ostream& operator << (std::ostream& out, const STATES& st) { 
+    switch (st) {
+    case STATES::OFF: out << "OFF";
+        break;
+    case STATES::ON: out << "ON";    
+    default:
+        break;
+    }
+    return out;
+}
 
 
 class Automata {
 private:
-    int cash;
+    int cash = 0;
     std::vector<std::string> menu;
-    int prices;
-    STATES state;
+    std::vector<int> prices;
+    STATES state = STATES::OFF;
 
 public:
     Automata() = default;
-    Automata(int _cash) : cash{_cash}, prices{0}, state{STATES::INITIAL_STATE} {}
+    // Automata(int _cash) : cash{_cash} {} not nessecary
 
-    void setMenu() {
-        char menuSetMode;
-        menu.clear();
-        while (true) {
-            std::cout << "\nEnter F - if you would like to load menu from file, or C if you prefer to enter from console: ";  
-            std::cin >> menuSetMode;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::string menuOption;
+    void setMenu();
 
-            if ('F' == menuSetMode || 'f' == menuSetMode) {
-                std::ifstream file("menu.txt");
-                if (!file) {
-                    std::cerr << "Unable to open file menu.txt";
-                    return;
-                }
+    void printState() {
+        std::cout << '\n' << state;
+    }
 
-                while (std::getline(file, menuOption)) {
-                    menu.push_back(menuOption);
-                }
+    void printMenu() {
+        for (const auto& menu_option : menu) {
+            std::cout << "\n" << menu_option;
+        }
+    }
 
-                file.close();
-                break;
-            }
+    // implement wait func
 
-            if ('C' == menuSetMode || 'c' == menuSetMode) {
-                std::cout << "\nEnter options one by one (enter 's' to srop input): ";
-                std::getline(std::cin, menuOption);
-                while (menuOption != "s") {
-                    menu.push_back(menuOption);
-                    std::getline(std::cin, menuOption);
-                }
+    void coin() {
+        int depositedMoney = 0;
+        // ask amount of money
+        std::cout << '\n' << "Enter money (zero or empty to cancel operation): ";
+        std::cin >> depositedMoney;
 
+        // change cash
+        // add possibility to cancel
+        
+    }
+
+    void on() {
+        // based on infinite loop ??
+        // start with wait state
+        // implement chosing of operation
+        // run coin func
+        // run check func
+        // run cook func
+        // return to wait state
+        state = STATES::ON;
+        while (state != STATES::OFF) {
+            switch (state) {
+            case STATES::ON: coin(); continue;
+            
+            default:
                 break;
             }
         }
+
+        // if (trigger == true) { off(); return;}
+    }
+
+    void choice() {}
+
+
+
+    void off() {
+        state = STATES::OFF;
     }
 };
 
