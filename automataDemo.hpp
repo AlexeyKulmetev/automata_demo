@@ -18,6 +18,7 @@ enum class STATES {
     MONEY_EQUAL,
     MONEY_MORE,
     MONEY_LESS
+    // maybe replase all unsuccessful attempt states to "CANCELD" state?
     // FIX ME add other states
 };
 // Just for debug
@@ -51,22 +52,44 @@ public:
     }
 
     void printMenu() {
-        for (const auto& menu_option : menu) {
-            std::cout << "\n" << menu_option;
+        auto menuIt = menu.begin();
+        auto pricesIT = prices.begin();
+
+        for (; menuIt != menu.end() && pricesIT != prices.end(); ++menuIt, ++pricesIT) {
+            std::cout << "\n" << *menuIt << "\t" << *pricesIT;
         }
+        // FIX ME do not work
     }
 
     // implement wait func
 
     void coin() {
+        std::string userResponse;
         int depositedMoney = 0;
         // ask amount of money
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << '\n' << "Enter money (zero or empty to cancel operation): ";
-        std::cin >> depositedMoney;
+        std::cin >> userResponse;
 
-        // change cash
-        // add possibility to cancel
-        
+        if (userResponse.empty() || userResponse == " " || userResponse == "\t") {
+            state = STATES::MONEY_NOT_ACCEPTED;
+            return;
+        }
+        else {
+            try {
+                depositedMoney = std::stoi(userResponse);
+            }
+            catch (const std::invalid_argument& err) {
+                state = STATES::MONEY_NOT_ACCEPTED;
+                return;
+            }
+            cash += depositedMoney;
+        }
+        return;
+    }
+
+    void choice() {
+
     }
 
     void on() {
@@ -78,10 +101,12 @@ public:
         // run cook func
         // return to wait state
         state = STATES::ON;
+
+        std::cout << "\n" << "Deposited cash: " << cash;
         while (state != STATES::OFF) {
             switch (state) {
             case STATES::ON: coin(); continue;
-            
+            case STATES::MONEY_ACCEPTED: choice(); continue;
             default:
                 break;
             }
@@ -89,8 +114,6 @@ public:
 
         // if (trigger == true) { off(); return;}
     }
-
-    void choice() {}
 
 
 
