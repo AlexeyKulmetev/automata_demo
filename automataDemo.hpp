@@ -58,6 +58,10 @@ public:
         for (; menuIt != menu.end() && pricesIT != prices.end(); ++menuIt, ++pricesIT) {
             std::cout << "\n" << *menuIt << "\t" << *pricesIT;
         }
+        // for (const auto& menuOption : menu) {
+        //     std::cout << "\n" << menuOption;
+        // }
+
         // FIX ME do not work
     }
 
