@@ -67,30 +67,7 @@ public:
 
     // implement wait func
 
-    void coin() {
-        std::string userResponse;
-        int depositedMoney = 0;
-        // ask amount of money
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << '\n' << "Enter money (zero or empty to cancel operation): ";
-        std::cin >> userResponse;
-
-        if (userResponse.empty() || userResponse == " " || userResponse == "\t") {
-            state = STATES::MONEY_NOT_ACCEPTED;
-            return;
-        }
-        else {
-            try {
-                depositedMoney = std::stoi(userResponse);
-            }
-            catch (const std::invalid_argument& err) {
-                state = STATES::MONEY_NOT_ACCEPTED;
-                return;
-            }
-            cash += depositedMoney;
-        }
-        return;
-    }
+    void coin();
 
     void choice() {
 
