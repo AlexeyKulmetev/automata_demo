@@ -11,16 +11,14 @@
 
 enum class STATES {
     OFF,
-    ON, // ??
-    READY_TO_START, // ??
+    ON,
+    READY_TO_START,
     MONEY_ACCEPTED,
     MONEY_NOT_ACCEPTED,
-    MONEY_EQUAL,
-    MONEY_MORE,
+    COOKED,
     MONEY_LESS
-    // maybe replase all unsuccessful attempt states to "CANCELD" state?
-    // FIX ME add other states
 };
+
 // Just for debug
 inline std::ostream& operator << (std::ostream& out, const STATES& st) { 
     switch (st) {
@@ -36,14 +34,13 @@ inline std::ostream& operator << (std::ostream& out, const STATES& st) {
 
 class Automata {
 private:
-    int cash = 0;
+    unsigned int cash = 0;
     std::vector<std::string> menu;
-    std::vector<int> prices;
+    std::vector<unsigned int> prices;
     STATES state = STATES::OFF;
 
 public:
     Automata() = default;
-    // Automata(int _cash) : cash{_cash} {} not nessecary
 
     void setMenu();
 
@@ -55,48 +52,91 @@ public:
         auto menuIt = menu.begin();
         auto pricesIT = prices.begin();
 
-        for (; menuIt != menu.end() && pricesIT != prices.end(); ++menuIt, ++pricesIT) {
-            std::cout << "\n" << *menuIt << "\t" << *pricesIT;
+        for (unsigned int i = 0; i < menu.size() && i < prices[i]; ++i) {
+            std::cout << "\n" << i + 1 << ". " << menu[i] << "\t" << prices[i];
         }
-        // for (const auto& menuOption : menu) {
-        //     std::cout << "\n" << menuOption;
-        // }
-
-        // FIX ME do not work
     }
-
-    // implement wait func
 
     void coin();
 
-    void choice() {
+    void finish() {
+        std::string response;
+        std::cout << "Would you like to order another drink? (enter y to order or another letter to stop): ";
+        std::cin >> response;
+        state = (response == "y") ? STATES::ON : STATES::OFF;
+    }
 
+    void giveChange() {
+        if (cash > 0) {
+            std::cout << "\nYour change is: " << cash;
+        }
+    }
+
+    void choice() {
+        unsigned int num;
+        printMenu();
+        std::cout << "\nEnter number of drink: ";
+        std::cin >> num;
+        
+        if (cash >= prices[num - 1]) {
+            cook(num + 1);
+        }
+        else {
+            state = STATES::MONEY_LESS;
+            cancel();
+        }
+    }
+
+    void cook(unsigned int index = 0) {
+
+        cash -= prices[index];
+        std::cout << "\n" << menu[index] << " cooked!";
+        state = STATES::COOKED;
     }
 
     void on() {
-        // based on infinite loop ??
-        // start with wait state
-        // implement chosing of operation
-        // run coin func
-        // run check func
-        // run cook func
-        // return to wait state
         state = STATES::ON;
-
+        std::string responce;
+        coin();
         std::cout << "\n" << "Deposited cash: " << cash;
         while (state != STATES::OFF) {
             switch (state) {
-            case STATES::ON: coin(); continue;
-            case STATES::MONEY_ACCEPTED: choice(); continue;
+            case STATES::ON: coin(); break; 
+            case STATES::MONEY_ACCEPTED: choice(); break;
+            case STATES::MONEY_NOT_ACCEPTED: cancel(); break;
+            case STATES::COOKED:
+                std::cout << "\nWould you like to make another order? (y or Y if yes): ";
+                std::cin >> responce;
+                if (responce != "y" && responce != "Y") {
+                    state = STATES::OFF; break;
+                }
+                else {
+                    state = STATES::ON; break;
+                }
+                break;
             default:
                 break;
             }
         }
-
-        // if (trigger == true) { off(); return;}
+        std::cout << "Bon appetit! Goodbye";
     }
 
-
+    void cancel() {
+        std::string responce;
+        switch (state) {
+        case STATES::MONEY_NOT_ACCEPTED:
+            std::cout << "\nPress y if you would like to continue: ";
+            std::cin >> responce;
+            if (responce != "y" && responce != "Y") {
+                state = STATES::ON; return;
+            }
+            else {
+                state = STATES::OFF; return;
+            }
+        case STATES::MONEY_LESS: coin(); return;
+        }
+            
+    }
 
     void off() {
         state = STATES::OFF;

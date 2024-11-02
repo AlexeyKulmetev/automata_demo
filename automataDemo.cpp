@@ -2,12 +2,13 @@
 
     void Automata::setMenu() {
         char menuSetMode;
+        std::string readLine;
         menu.clear();
         while (true) {
             std::cout << "\nEnter F - if you would like to load menu from file, or C if you prefer to enter from console: ";  
             std::cin >> menuSetMode;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::string readLine;
+
 
             if ('F' == menuSetMode || 'f' == menuSetMode) {
                 std::ifstream file("menu.txt");
@@ -41,14 +42,13 @@
                 int tmpCash;
                 std::string tmpMenuOption;
                 std::cout << "Enter options one by one (enter 's' to srop input):\n";
-                //std::getline(std::cin, readLine);
 
                 while (true) {
                     std::cout << "Enter the name: ";
                     std::getline(std::cin, readLine);
-                    std::cout << "Enter ther price of " << readLine << ": ";
                     if (readLine == "s") break;
                     tmpMenuOption = readLine;
+                    std::cout << "Enter ther price of " << readLine << ": ";
                     std::getline(std::cin, readLine);
                     if (readLine == "s") break;
 
@@ -72,8 +72,6 @@
     void Automata::coin() {
         std::string userResponse;
         int depositedMoney = 0;
-        // ask amount of money
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << '\n' << "Enter money (zero or empty to cancel operation): ";
         std::cin >> userResponse;
 
@@ -90,6 +88,7 @@
                 return;
             }
             cash += depositedMoney;
+            state = STATES::MONEY_ACCEPTED;
         }
         return;
     }
